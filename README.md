@@ -161,6 +161,6 @@ Feel free to fork and submit pull requests to improve this stack or extend its f
 ## ✨ Author
 
 **Imrul Hasan**  
-DevOps Engineer | Linux & WordPress Expert  
+DevOps Engineer
 Twitter: [@vimrul](https://twitter.com/vimrul)  
 Website: [https://imrul.net](https://imrul.net)
