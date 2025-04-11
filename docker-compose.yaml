@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service for Odoo
+  db:
+    image: postgres:15
+    container_name: odoo18-db
+    restart: always
+    environment:
+      # Database name
+      POSTGRES_DB: postgres
+      # Database user
+      POSTGRES_USER: odoo
+      # Secret file for DB password (secured)
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgresql_password
+      # Define custom data directory
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      # Persistent storage for PostgreSQL data
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    secrets:
+      # Link the password secret
+      - postgresql_password
+
+  # Odoo 18 Application Web Service
+  web:
+    image: odoo:18
+    container_name: odoo18
+    restart: always
+    depends_on:
+      - db
+    ports:
+      # Expose Odoo's default port to host port 8055
+      - "8055:8069"
+    environment:
+      # Hostname of PostgreSQL service
+      HOST: db
+      # Username for PostgreSQL
+      USER: odoo
+      # Securely load password via Docker Secret
+      PASSWORD_FILE: /run/secrets/postgresql_password
+    volumes:
+      # Persistent storage for Odoo data
+      - odoo-web-data:/var/lib/odoo
+      # Custom addons directory
+      - ./addons:/mnt/extra-addons
+      # Configuration files (odoo.conf)
+      - ./config:/etc/odoo
+    secrets:
+      # Link the same password secret
+      - postgresql_password
+
+# Persistent named volumes
+volumes:
+  odoo-db-data:
+  odoo-web-data:
+
+# Docker secret to store PostgreSQL password securely
+secrets:
+  postgresql_password:
+    file: ./odoo_pg_pass
